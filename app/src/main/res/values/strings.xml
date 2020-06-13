@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">ImageCrytor</string>
+    <string name="app_name">Textcryptor</string>
+    <string name="enter_text_for_encrypt">Enter text for encrypt</string>
+    <string name="enter_the_key">Enter the password key</string>
+    <string name="encrypt">Encrypt</string>
+    <string name="decryption">Decryption</string>
+    <string name="encrypt_text">Encryption Text</string>
+    <string name="decryption_text">Decryption Text</string>
+    <string name="enter_text_for_decrypt">Enter text for decrypt</string>
+    <string name="decrypt">Decrypt</string>
+    <string name="copy">Copy</string>
 </resources>

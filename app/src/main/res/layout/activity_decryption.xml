@@ -6,42 +6,53 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/ivImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/ic_launcher_icon"
-        app:layout_constraintBottom_toBottomOf="@id/btnEncryptKey"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edDecryptText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="@string/enter_text_for_decrypt"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnEncryptKey"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edDecryptKey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:padding="4dp"
-        android:text="@string/encrypt_text"
+        android:layout_margin="16dp"
+        android:hint="@string/enter_the_key"
+        android:maxLength="8"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/edDecryptText" />
+
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnDecryptionKey"
+        android:id="@+id/btnDecryptKey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:padding="4dp"
-        android:text="@string/decryption_text"
+        android:text="@string/decrypt"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnEncryptKey" />
+        app:layout_constraintTop_toBottomOf="@id/edDecryptKey" />
+
+    <TextView
+        android:id="@+id/tvDecryptOutput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnDecryptKey" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
