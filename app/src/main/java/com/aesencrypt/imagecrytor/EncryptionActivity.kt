@@ -1,28 +1,19 @@
 package com.aesencrypt.imagecrytor
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_encryption.*
-import java.io.UnsupportedEncodingException
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
-import javax.crypto.BadPaddingException
-import javax.crypto.Cipher
-import javax.crypto.IllegalBlockSizeException
-import javax.crypto.NoSuchPaddingException
-import javax.crypto.spec.SecretKeySpec
+import pl.aprilapps.easyphotopicker.*
 
 
 class EncryptionActivity : AppCompatActivity() {
 
+    private lateinit var easyImage: EasyImage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +23,12 @@ class EncryptionActivity : AppCompatActivity() {
         actionbar!!.title = "Encryption Activity"
         actionbar.setDisplayHomeAsUpEnabled(true)
 
+        easyImage = EasyImage.Builder(this@EncryptionActivity)
+            .setChooserType(ChooserType.CAMERA_AND_GALLERY).build()
+
         btnEncryptKey.setOnClickListener {
             when {
-                edEncryptText.text.isNullOrBlank() -> {
-                    Toast.makeText(
-                        applicationContext,
-                        "Please enter encryption text",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+
                 edEncryptKey.text.isNullOrBlank() -> {
                     Toast.makeText(
                         applicationContext,
@@ -55,37 +43,12 @@ class EncryptionActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                else -> {
-                    tvEncryptOutput.text = ""
-                    val encryptionText = encrypt(
-                        edEncryptText.text.toString(),
-                        edEncryptKey.text.toString(),
-                        applicationContext
-                    )
-                    tvEncryptOutput.text = encryptionText
-                    btnCopy.visibility = View.VISIBLE
-                }
             }
         }
 
-        btnCopy.setOnClickListener {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                val clipboard =
-                    getSystemService(Context.CLIPBOARD_SERVICE) as android.text.ClipboardManager
-                clipboard.text = tvEncryptOutput.text
-                Toast.makeText(applicationContext, "Copied to Clipboard!", Toast.LENGTH_SHORT)
-                    .show()
 
-            } else {
-
-                val clipboard =
-                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Copied Text", tvEncryptOutput.text)
-                clipboard.setPrimaryClip(clip)
-                Toast.makeText(applicationContext, "Copied to Clipboard!", Toast.LENGTH_SHORT)
-                    .show()
-
-            }
+        btnSelectImageFromGallery.setOnClickListener {
+            easyImage.openGallery(this)
         }
     }
 
@@ -96,38 +59,36 @@ class EncryptionActivity : AppCompatActivity() {
     }
 
 
-    private fun encrypt(value: String, password: String, c: Context?): String? {
-        var crypted = ""
-        crypted = try {
-            val cleartext = value.toByteArray(charset("UTF-8"))
-            val key = SecretKeySpec(password.toByteArray(), "DES")
-            val cipher: Cipher = Cipher.getInstance("DES/ECB/ZeroBytePadding")
-            // Initialize the cipher for decryption
-            cipher.init(Cipher.ENCRYPT_MODE, key)
-            Base64.encodeToString(cipher.doFinal(cleartext), Base64.DEFAULT)
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: NoSuchPaddingException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: IllegalBlockSizeException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: BadPaddingException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: InvalidKeyException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: UnsupportedEncodingException) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return "Encrypt Error"
-        }
-        return crypted
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        easyImage.handleActivityResult(
+            requestCode,
+            resultCode,
+            data,
+            this,
+            object : DefaultCallback() {
+                override fun onMediaFilesPicked(
+                    imageFiles: Array<MediaFile>,
+                    source: MediaSource
+                ) {
+                    Glide.with(this@EncryptionActivity)
+                        .load(imageFiles[0].file)
+                        .into(ivImage)
+                    ivImage.visibility = View.VISIBLE
+                    edEncryptKey.visibility = View.VISIBLE
+                    btnEncryptKey.visibility = View.VISIBLE
+                }
+
+                override fun onImagePickerError(
+                    error: Throwable,
+                    source: MediaSource
+                ) {
+                    error.printStackTrace()
+                }
+
+                override fun onCanceled(source: MediaSource) { //Not necessary to remove any files manually anymore
+                }
+            })
     }
 
 

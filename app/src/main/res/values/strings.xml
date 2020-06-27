@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Textcryptor</string>
+    <string name="app_name">Image Cryptor</string>
     <string name="enter_text_for_encrypt">Enter text for encrypt</string>
     <string name="enter_the_key">Enter the password key</string>
     <string name="encrypt">Encrypt</string>
@@ -9,4 +9,7 @@
     <string name="enter_text_for_decrypt">Enter text for decrypt</string>
     <string name="decrypt">Decrypt</string>
     <string name="copy">Copy</string>
+    <string name="select_image_for_gallery">Select image from gallery for encrypt</string>
+    <string name="aes_encryption">AES Encryption</string>
+    <string name="aes_decryption">AES Decryption</string>
 </resources>
