@@ -2,6 +2,7 @@ package com.aesencrypt.imagecrytor
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -9,12 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_encryption.*
 import pl.aprilapps.easyphotopicker.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import javax.crypto.Cipher
+import javax.crypto.CipherInputStream
+import javax.crypto.CipherOutputStream
+import javax.crypto.spec.SecretKeySpec
 
 
 class EncryptionActivity : AppCompatActivity() {
 
     private lateinit var easyImage: EasyImage
-
+    private lateinit var file: File
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_encryption)
@@ -43,6 +51,10 @@ class EncryptionActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                else -> {
+                    encrypt()
+                }
             }
         }
 
@@ -53,10 +65,48 @@ class EncryptionActivity : AppCompatActivity() {
     }
 
 
+    fun encrypt() {
+        val state = Environment.getExternalStorageState()
+        if (Environment.MEDIA_MOUNTED == state) {
+            try {
+                val picDir = File(getExternalFilesDir(null).toString() + "/ImageCryptor/")
+                if (!picDir.exists()) {
+                    picDir.mkdir()
+                }
+
+                val originalFile = FileInputStream(file.absolutePath)
+                // This stream write the encrypted text. This stream will be wrapped by
+                // another stream.
+                val encryptedFile = FileOutputStream("$picDir/1.encrypted")
+
+                // Length is 16 byte
+                val key = SecretKeySpec(
+                    "MyDifficultPassw".toByteArray(),
+                    "AES"
+                )
+                val aes = Cipher.getInstance("AES")
+                aes.init(Cipher.ENCRYPT_MODE, key)
+                val out = CipherOutputStream(encryptedFile, aes)
+                out.write(originalFile.readBytes())
+                out.flush()
+                out.close()
+                Toast.makeText(this, "Successfully imported", Toast.LENGTH_SHORT).show()
+                finish()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        } else {
+            Toast.makeText(this, "Unable to write", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         onBackPressed()
         return true
     }
+
+
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -71,6 +121,7 @@ class EncryptionActivity : AppCompatActivity() {
                     imageFiles: Array<MediaFile>,
                     source: MediaSource
                 ) {
+                    file = imageFiles[0].file
                     Glide.with(this@EncryptionActivity)
                         .load(imageFiles[0].file)
                         .into(ivImage)
